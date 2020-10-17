@@ -22,7 +22,7 @@
 using namespace std;
 
 // Persistence
-const char *textureFilename = "C:/users/Jules/Code/Aids/Kirk.tga";
+const char *textureFilename = "C:/Users/edward/Desktop/CPSC5700/linedface/image2.tga";
 const char *uvsFilename = "C:/users/Jules/Code/Book/Kirk.uvs";
 
 // Vertices, Normals, UVs (half face)
