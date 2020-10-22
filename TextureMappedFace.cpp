@@ -1,6 +1,5 @@
-// Assignment 6 (Exercise 15.5) - Texture-mapped mesh 
-// Eric Nunn & Yvonne Rogell
-// CPSC 5700, Seattle University, Fall Quarter 2019
+// Original: FacetedGouraud.cpp (c) Jules Bloomenthal 2020, all rights reserved
+// Modified: 12.5 TextureMappedFace.cpp by Edward Lam
 
 // Include statements
 #include <glad.h>
@@ -106,9 +105,6 @@ const char* pixelShader = "\
 		pColor = vec4(texColor.rgb, 1);	// but make opaque		\n\
 	}";
 
-// Global constant variables indicating size of points, number of points, triangles, vertices, 
-// normals, and uv coordinates
-// Declares arrays of normals, pointsFullFace, trianglesFullFaces and uvs
 const int npoints = sizeof(points) / sizeof(points[0]);
 const int ntriangles = sizeof(triangles) / sizeof(triangles[0]);
 const int midline = points[0][0];
@@ -126,14 +122,15 @@ const char* filename = "image2.tga";
 int textureUnit = 0;
 GLuint textureName;
 
-// Function to display image on screen.
+// Display
 void Display(GLFWwindow* w) {
-	// Clears the buffer
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-
-	// Set camera speed
-	camera.SetSpeed(0.3f, 0.01f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glUseProgram(program);
+	glBindBuffer(GL_ARRAY_BUFFER, vBuffer);
 
 	// Set window size
 	int screenWidth, screenHeight;
@@ -167,12 +164,16 @@ void Display(GLFWwindow* w) {
 	// Draw shape
 	glDrawElements(GL_TRIANGLES, nvertices, GL_UNSIGNED_INT, trianglesFullFace);
 
+	// Draw Light
+	UseDrawShader(camera.fullview);
+	bool visible = IsVisible(light, camera.fullview);
+	bool incube = fabs(light.x) < 1 && fabs(light.y) < 1 && fabs(light.z) < 1;
+	Disk(light, 12, incube ? vec3(0, 0, 1) : vec3(1, 0, 0), visible ? 1 : .25f);
+
 	glFlush();
 }
 
-// Function to changing the points from pixel values to lie between +/- 1.  
 void Normalize() {
-	// Scale and offset so that points fall within +/-1 in x, y and z
 	vec3 mn(FLT_MAX), mx(-FLT_MAX);
 	for (int i = 0; i < npoints * 2; i++) {
 		vec3 p = pointsFullFace[i];
@@ -215,10 +216,6 @@ void Reflect() {
 	// Fill in second half of doubled triangle array
 	for (int i = 0; i < ntriangles; ++i) {
 		int* triangle = triangles[i];
-
-		// Test each triangle corner for whether it is on(or close to) the mid - line
-		// If on the midline, use the same vertex id as in the original triangle
-		// If not on midline, use vertex id from second half of vertex array
 		trianglesFullFace[i + ntriangles][0] = pointsFullFace[triangle[0]].x == midline ? triangle[0] : triangle[0] + npoints;
 		trianglesFullFace[i + ntriangles][1] = pointsFullFace[triangle[1]].x == midline ? triangle[1] : triangle[1] + npoints;
 		trianglesFullFace[i + ntriangles][2] = pointsFullFace[triangle[2]].x == midline ? triangle[2] : triangle[2] + npoints;
@@ -325,59 +322,45 @@ void InitVertexBuffer() {
 		uvs[i] = vec2(pointsFullFace[i].x * 0.5 + 0.5, pointsFullFace[i].y * 0.5 + 0.5);
 	}
 
-	// Create GPU buffer, make it the active buffer
+	// create GPU buffer to hold positions and colors, and make it the active buffer
 	glGenBuffers(1, &vBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vBuffer);
-	// Allocate memory for vertex positions and normals
+	// allocate memory for vertex positions and colors
 	glBufferData(GL_ARRAY_BUFFER, sizePts + sizeNms + sizeUVs, NULL, GL_STATIC_DRAW);
-	// Copy data
+	// load data to sub-buffers
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizePts, &pointsFullFace[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, sizePts, sizeNms, &normals[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, sizePts + sizeNms, sizeUVs, &uvs[0]);
 }
 
-// Display a message if GFLW throws an error
-void ErrorGFLW(int id, const char* reason) {
-	printf("GFLW error %i: %s\n", id, reason);
-}
-
-void Close() {
-	// unbind vertex buffer and free GPU memory
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &vBuffer);
-}
 
 // Main function runs when program is started.
 int main() {
-	glfwSetErrorCallback(ErrorGFLW);
-	if (!glfwInit())
-		return 1;
-	int screenWidth = 1200;
-	GLFWwindow* w = glfwCreateWindow(screenWidth, screenWidth, "Face", NULL, NULL);
-	if (!w) {
-		glfwTerminate();
-		return 1;
-	}
-	glfwSetScrollCallback(w, MouseWheel);
-	glfwSetMouseButtonCallback(w, MouseButton);
-	glfwSetCursorPosCallback(w, MouseMove);
+	// init app window and GL context
+	glfwInit();
+	GLFWwindow* w = glfwCreateWindow(screenWidth, screenHeight, "Texture Mapped Face", NULL, NULL);
+	glfwSetWindowPos(w, 100, 100);
+
 	glfwMakeContextCurrent(w);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	printf("GL version: %s\n", glGetString(GL_VERSION));
-	PrintGLErrors();
+	// init shader and GPU data
 	program = LinkProgramViaCode(&vertexShader, &pixelShader);
 	InitVertexBuffer();
-	camera.SetSpeed(.01f, .001f); // **** otherwise, a bit twitchy
-	glfwSetWindowSizeCallback(w, Resize); // ***** so can view larger window
+	printf(usage);
+    // callbacks
+    glfwSetCursorPosCallback(w, MouseMove);
+    glfwSetMouseButtonCallback(w, MouseButton);
+    glfwSetScrollCallback(w, MouseWheel);
+    glfwSetWindowSizeCallback(w, Resize);
 	glfwSwapInterval(1);
 	// Set texture unit and initialize texture name
 	textureName = LoadTexture(filename, textureUnit); // in Misc.h
 	while (!glfwWindowShouldClose(w)) {
+		glfwPollEvents();
 		Display(w);
 		glfwSwapBuffers(w);
-		glfwPollEvents();
 	}
-	Close();
+	glDeleteBuffers(1, &vBuffer);
 	glfwDestroyWindow(w);
 	glfwTerminate();
 }

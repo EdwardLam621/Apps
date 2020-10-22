@@ -157,7 +157,7 @@
     <ClCompile Include="..\Lib\Quaternion.cpp" />
     <ClCompile Include="..\Lib\Sprite.cpp" />
     <ClCompile Include="..\Lib\Widgets.cpp" />
-    <ClCompile Include="10-SmoothShadingFace - 複製.cpp" />
+    <ClCompile Include="TextureMappedFace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\Camera.h" />
