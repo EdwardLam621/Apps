@@ -22,8 +22,8 @@
 using namespace std;
 
 // Persistence
-const char *textureFilename = "C:/Users/edward/Desktop/CPSC5700/linedface/image2.tga";
-const char *uvsFilename = "C:/users/Jules/Code/Book/Kirk.uvs";
+const char *textureFilename = "image2.tga";
+const char *uvsFilename = "uvs.uvs";
 
 // Vertices, Normals, UVs (half face)
 vec3 pointsHalfFace[] = {
@@ -70,16 +70,16 @@ int triangles[nTriangles][3];
 typedef vector<int2> Contour;
 vector<Contour> edgeContours;
 
-// Texture Image Display
-int textureX = 0, textureW = 0, textureH = 0;
-Sprite texture;
-
 // OpenGL IDs
 GLuint vBuffer = 0, program = 0;
 
 // App Window, Camera
 int winWidth = 1600, winHeight = 800;
 Camera camera(winHeight, winHeight, vec3(0, 0, 0), vec3(0, 0, -5), 30, 0.001f, 500, false);
+
+// Texture Image Display
+int textureX = 1000, textureW = winWidth-textureX, textureH = 0;
+Sprite texture;
 
 // User Selection
 void *picked = NULL; // togglers, camera, points, uvs, edgeContours
@@ -236,7 +236,7 @@ void Display(GLFWwindow* w) {
 		for (int i = 0; i < nPoints; i++)
 			Number(points[i], camera.fullview, i, vec3(.3f, 0, 0), 12);
 	// right side: texture image
-	glViewport(textureX, 0, winWidth-textureX, winHeight);
+	glViewport(textureX, 0, textureW, textureH);
     texture.Display();
 	DrawUVs(vec3(0, 0, 1));
 	// controls
@@ -350,6 +350,7 @@ void WriteUVs() {
 		fprintf(out, "u, v, contour\n");
 		for (int i = 0; i < nPoints; i++)
 			fprintf(out, "%5.4f %5.4f %i\n", uvs[i][0], uvs[i][1], contours[i]);
+		fclose(out);
 	}
 	printf("%s%s written\n", filename.c_str(), out? "" : " not");
 }
@@ -597,10 +598,7 @@ void InitTexture() {
 	int imageW, imageH;
 	texture.Initialize(textureFilename);
 	TargaSize(textureFilename, imageW, imageH);
-	float textureAspect = (float) imageW/imageH;
-	textureX = winWidth-(int)(textureAspect*winHeight);
-	textureW = winWidth-textureX;
-	textureH = winHeight;
+	textureH = (int) (textureW*(float)imageH/imageW);
 }
 
 void InitVertexBuffer() {

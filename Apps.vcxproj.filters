@@ -45,7 +45,7 @@
     <ClCompile Include="..\Lib\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextureMeasure.cpp">
+    <ClCompile Include="10-SmoothShadingFace - 複製.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
