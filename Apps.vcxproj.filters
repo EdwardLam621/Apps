@@ -45,7 +45,7 @@
     <ClCompile Include="..\Lib\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextureMappedFace.cpp">
+    <ClCompile Include="16-Stub-BezierCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

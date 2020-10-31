@@ -21,7 +21,7 @@ const char *vertexShader = R"(
     out vec4 vColor;
     void main() {
         gl_Position = vec4(point, 0, 1);
-        vColor = vec4(color, 1);
+        vColor = vec4(color, 0);
     }
 )";
 

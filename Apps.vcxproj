@@ -157,7 +157,7 @@
     <ClCompile Include="..\Lib\Quaternion.cpp" />
     <ClCompile Include="..\Lib\Sprite.cpp" />
     <ClCompile Include="..\Lib\Widgets.cpp" />
-    <ClCompile Include="TextureMappedFace.cpp" />
+    <ClCompile Include="16-Stub-BezierCurve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\Camera.h" />

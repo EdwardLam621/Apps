@@ -15,7 +15,7 @@ float  points[][2] = { {-.2f, -.2f}, {-.2f, .8f}, {-.6f, .8f}, {-.6f, -.6f}, {.5
 float  colors[][3] = { {1, 1, 1}, {0.85, 0.7, 0}, {0.4, 0.8, 0}, {0, 1, 1} , {1, 0, 1}, {.7,.4 ,.5} };
 
 // triangles
-int triangles[][3] = { {0,1,2} };//,{0,2,3},{0,3,4}, {0,4,5} };
+int triangles[][3] = { {0,1,2},{0,2,3},{0,3,4}, {0,4,5} };
 
 const char *vertexShader = R"(
     #version 130
@@ -24,7 +24,7 @@ const char *vertexShader = R"(
     out vec4 vColor;
     void main() {
         gl_Position = vec4(point, 0, 1);
-        vColor = vec4(color, 1);
+        vColor = vec4(color, 2000);
     }
 )";
 
