@@ -166,6 +166,7 @@
     <ClInclude Include="..\Include\Letters.h" />
     <ClInclude Include="..\Include\Misc.h" />
     <ClInclude Include="..\Include\Numbers.h" />
+    <ClInclude Include="..\Include\Quaternion.h" />
     <ClInclude Include="..\Include\Sprite.h" />
     <ClInclude Include="..\Include\VecMat.h" />
     <ClInclude Include="..\Include\Widgets.h" />
