@@ -47,12 +47,6 @@ public:
         Line(p1, p2, 4.0f, meshColor, width, opacity);
         Line(p2, p3, 4.0f, meshColor, width, opacity);
         Line(p3, p4, 4.0f, meshColor, width, opacity);
-
-        // round endpoints
-        Disk(p1, 10.0f, pointColor, opacity);
-        Disk(p2, 10.0f, pointColor, opacity);
-        Disk(p3, 10.0f, pointColor, opacity);
-        Disk(p4, 10.0f, pointColor, opacity);
     }
     vec3 *PickPoint(int x, int y, mat4 view) {
         // return pointer to nearest control point, if within 10 pixels of mouse (x,y), else NULL
