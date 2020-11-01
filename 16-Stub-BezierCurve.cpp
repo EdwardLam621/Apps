@@ -42,8 +42,6 @@ public:
         }
     }
     void DrawControlMesh(vec3 pointColor, vec3 meshColor, float opacity, float width) {
-        // draw the four control points and the mesh that connects them
-        UseDrawShader(camera.fullview);
         Line(p1, p2, 4.0f, meshColor, width, opacity);
         Line(p2, p3, 4.0f, meshColor, width, opacity);
         Line(p3, p4, 4.0f, meshColor, width, opacity);
